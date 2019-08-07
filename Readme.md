@@ -1,7 +1,7 @@
 # Личный проект «YetiCave»
 
 * Студент: [Николай Блинов](https://up.htmlacademy.ru/php/10/user/55546).
-* Наставник: `Неизвестно`.
+* Наставник: [Максим Деев](https://htmlacademy.ru/profile/id685777).
 
 ---
 
