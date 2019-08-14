@@ -28,7 +28,7 @@
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost"><?= htmlspecialchars(to_format_currency($value['price'])) ?><b class="rub">р</b></span>
                         </div>
-                        <div class="lot__timer timer <?= explode(':', $expiration_date)[0] === '00' ? 'timer—finishing' : '' ?>"><?= $expiration_date ?></div>
+                        <div class="lot__timer timer <?= $expiration_date[0] === '00' ? 'timer—finishing' : '' ?>"><?= $expiration_date[0] . ':' . $expiration_date[1] ?></div>
                     </div>
                 </div>
             </li>

@@ -5,6 +5,6 @@ function to_format_currency($price) {
 }
 
 function get_dt_range($date) {
-    return date('H:i', strtotime($date) - time());
+    return explode(':', date('H:i', strtotime($date) - time()));
 }
 
