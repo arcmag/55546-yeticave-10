@@ -48,3 +48,4 @@ UPDATE `lot` SET `name` = 'new lot name' WHERE id = 1;
 
 /* Запрос на получение ставок для лота по его id с сортировкой по дате */
 SELECT * FROM `wager` WHERE `lot_id` = 1 ORDER BY `date` DESC;
+
