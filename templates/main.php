@@ -26,7 +26,7 @@
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?= htmlspecialchars(to_format_currency($value['price'])) ?><b class="rub">р</b></span>
+                            <span class="lot__cost"><?= htmlspecialchars(to_format_currency($value['start_price'])) ?><b class="rub">р</b></span>
                         </div>
                         <div class="lot__timer timer <?= $expiration_date[0] === '00' ? 'timer—finishing' : '' ?>"><?= $expiration_date[0] . ':' . $expiration_date[1] ?></div>
                     </div>
