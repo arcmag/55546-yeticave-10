@@ -45,11 +45,7 @@
     }
 
     if(count($errors) === 0) {
-        debug($_POST);
-        debug($_FILES[$file_field]);
-
         create_new_lot($connect, $_POST, $_FILES[$file_field]);
-
         exit;
     }
 

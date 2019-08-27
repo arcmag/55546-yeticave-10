@@ -61,9 +61,6 @@ function create_new_lot($connect, $data_lot, $img) {
     $img_path = __DIR__ . '/uploads/';
     $img_url = '/uploads/' . $img_name;
 
-    var_dump($data_lot);
-    var_dump($img);
-
     $stmt = mysqli_prepare($connect, "
         INSERT INTO `lot`
         (`date_create`, `name`, `description`, `category_id`, `start_price`, `img`, `date_end`, `bid_step`, `author_id`) VALUES
