@@ -34,11 +34,6 @@ if(isset($page)) {
                 'wagers' => get_wagers_by_lot_id($connect, $data_lot['id'])
             ]);
         }
-    } else if($page === 'add_lot') {
-        $page_title = 'Добавление лота';
-        $page_template = include_template('add.php', [
-            'categories' => $categories,
-        ]);
     }
 } else {
     $page_title = 'Главная страница';

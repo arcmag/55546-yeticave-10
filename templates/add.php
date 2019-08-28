@@ -8,7 +8,7 @@
         'message' => ['length' => ['min' => 10, 'max' => 2000]],
         'lot-rate' => ['min' => 1],
         'lot-step' => ['min' => 1],
-        'lot-date' => ['match' => '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', 'check_date' => time() + 3600 * 24]
+        'lot-date' => ['match' => '/^\d{4}-\d{2}-\d{2}$/', 'check_date' => time() + 3600 * 24]
     ];
 
     // проверка полей
