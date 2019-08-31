@@ -27,14 +27,14 @@ function getPostVal($name) {
 }
 
 function check_field_len($value, $min, $max) {
-    return $value < $min || $value > $max;
+    return $value >= $min && $value <= $max;
 }
 
 function validate_field($value, $rules) {
     $error = null;
 
     foreach($rules as $rule => $config) {
-        if($rule === 'length' && !check_field_len($value, $config['min'], $config['max'])) {
+        if($rule === 'length' && !check_field_len(mb_strlen($value), $config['min'], $config['max'])) {
             $error = "Не корректная длинна строки, минимальная допустимая длина {$config['min']}, a максимальная {$config['max']}";
         }
 
@@ -48,6 +48,10 @@ function validate_field($value, $rules) {
 
         if($rule === 'match' && !preg_match($config, $value)) {
             $error = "Не верный формат строки";
+        }
+
+        if($config === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $error = "Не корретный e-mail";
         }
     }
 
@@ -85,4 +89,22 @@ function create_new_lot($connect, $data_lot, $img) {
         header("Location: /?page=lot&lot_id=" . mysqli_insert_id($connect));
     }
 
+}
+
+function email_exist($connect, $email) {
+    $email = mysqli_real_escape_string($connect, $email);
+    $res = mysqli_query($connect, "SELECT * FROM `user` WHERE email = '$email'");
+    return mysqli_num_rows($res) === 0;
+}
+
+function create_new_user($connect, $data) {
+    $stmt = mysqli_prepare($connect, "
+        INSERT INTO `user`
+        (`date_registration`, `email`, `name`, `password`, `contacts`) VALUES
+        (NOW(), ?, ?, ?, ?)");
+
+    mysqli_stmt_bind_param($stmt, 'ssss', $data['email'], $data['name'], password_hash($data['password'], PASSWORD_DEFAULT), $data['message']);
+    mysqli_stmt_execute($stmt);
+
+    header("Location: /");
 }
