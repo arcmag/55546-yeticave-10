@@ -103,7 +103,7 @@ function create_new_user($connect, $data) {
         (`date_registration`, `email`, `name`, `password`, `contacts`) VALUES
         (NOW(), ?, ?, ?, ?)");
 
-    mysqli_stmt_bind_param($stmt, 'ssss', $data['email'], $data['name'], $data['password'], $data['message']);
+    mysqli_stmt_bind_param($stmt, 'ssss', $data['email'], $data['name'], password_hash($data['password'], PASSWORD_DEFAULT), $data['message']);
     mysqli_stmt_execute($stmt);
 
     header("Location: /");

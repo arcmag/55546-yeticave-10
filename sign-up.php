@@ -39,14 +39,14 @@ if(!empty($_POST)) {
     if(empty($errors[$field_name]) && !email_exist($connect, $_POST[$field_name])) {
         $errors[$field_name] = 'Данный E-mail уже используется';
     }
+
+    if(count($errors) === 0) {
+        create_new_user($connect, $_POST);
+        exit;
+    }
 }
 
 debug($errors, false);
-
-if(count($errors) === 0) {
-    create_new_user($connect, $_POST);
-    exit;
-}
 
 $user_name = 'Николай';
 
