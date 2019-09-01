@@ -1,11 +1,12 @@
 <?php
 
-require_once 'config/global.php';
-require_once 'config/db.php';
+require_once 'init.php';
 
-require_once './helpers.php';
-require_once './data.php';
-require_once './functions.php';
+if(is_user_authorization()) {
+    http_response_code(403);
+    header('Location: /');
+    exit;
+}
 
 $connect = connect_db(DB_CONFIG);
 
@@ -46,10 +47,6 @@ if(!empty($_POST)) {
     }
 }
 
-debug($errors, false);
-
-$user_name = 'Николай';
-
 $categories = get_categories($connect);
 
 $page_title = 'Регистрация';
@@ -59,8 +56,6 @@ $page_template = include_template('sign-up.php', [
 
 print(include_template('layout.php', [
     'title' => $page_title,
-    'is_auth' => rand(0, 1),
-    'user_name' => $user_name,
     'categories' => $categories,
     'content' => $page_template
 ]));

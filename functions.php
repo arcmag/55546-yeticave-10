@@ -59,8 +59,6 @@ function validate_field($value, $rules) {
 }
 
 function create_new_lot($connect, $data_lot, $img) {
-    $author_id = 1; // временный id автора лота
-
     $img_name = $img['name'];
     $img_path = __DIR__ . '/uploads/';
     $img_url = '/uploads/' . $img_name;
@@ -78,17 +76,14 @@ function create_new_lot($connect, $data_lot, $img) {
         $img_url,
         $data_lot['lot-date'],
         $data_lot['lot-step'],
-        $author_id
+        $_SESSION['user_id']
     );
 
     $result = mysqli_stmt_execute($stmt);
-
     if($result) {
         move_uploaded_file($img['tmp_name'], $img_path . $img_name);
-
         header("Location: /?page=lot&lot_id=" . mysqli_insert_id($connect));
     }
-
 }
 
 function email_exist($connect, $email) {
@@ -107,4 +102,26 @@ function create_new_user($connect, $data) {
     mysqli_stmt_execute($stmt);
 
     header("Location: /");
+}
+
+function check_user_data($connect, $email) {
+    $email = mysqli_real_escape_string($connect, $email);
+    $res = mysqli_query($connect, "SELECT id, password FROM `user` WHERE email = '$email'");
+    return mysqli_fetch_assoc($res);
+}
+
+function user_authorization($user_id) {
+    $_SESSION['user_id'] = $user_id;
+}
+
+function user_exit() {
+    unset($_SESSION['user_id']);
+}
+
+function is_user_authorization() {
+    return isset($_SESSION['user_id']);
+}
+
+function get_user_data($connect) {
+    return mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `user` WHERE id = " . $_SESSION['user_id']));
 }
