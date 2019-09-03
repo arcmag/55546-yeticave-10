@@ -5,7 +5,7 @@ require_once 'init.php';
 $connect = connect_db(DB_CONFIG);
 
 if(is_user_authorization()) {
-    $user = get_user_data($connect);
+    $user = get_user_data($connect, $_SESSION['user_id']);
 }
 
 $categories = get_categories($connect);

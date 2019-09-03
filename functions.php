@@ -58,7 +58,7 @@ function validate_field($value, $rules) {
     return $error;
 }
 
-function create_new_lot($connect, $data_lot, $img) {
+function create_new_lot($connect, $data_lot, $img, $user_id) {
     $img_name = $img['name'];
     $img_path = __DIR__ . '/uploads/';
     $img_url = '/uploads/' . $img_name;
@@ -76,7 +76,7 @@ function create_new_lot($connect, $data_lot, $img) {
         $img_url,
         $data_lot['lot-date'],
         $data_lot['lot-step'],
-        $_SESSION['user_id']
+        $user_id
     );
 
     $result = mysqli_stmt_execute($stmt);
@@ -122,6 +122,6 @@ function is_user_authorization() {
     return isset($_SESSION['user_id']);
 }
 
-function get_user_data($connect) {
-    return mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `user` WHERE id = " . $_SESSION['user_id']));
+function get_user_data($connect, $user_id) {
+    return mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `user` WHERE id = " . $user_id));
 }

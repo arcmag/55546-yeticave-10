@@ -54,9 +54,11 @@ if(isset($_FILES[$file_field]) && $_FILES[$file_field]['tmp_name'] !== '') {
 }
 
 if(count($errors) === 0) {
-    create_new_lot($connect, $_POST, $_FILES[$file_field]);
+    create_new_lot($connect, $_POST, $_FILES[$file_field], $_SESSION['user_id']);
     exit;
 }
+
+debug($errors);
 
 $user_name = 'Николай';
 
