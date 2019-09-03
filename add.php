@@ -58,8 +58,6 @@ if(count($errors) === 0) {
     exit;
 }
 
-debug($errors);
-
 $user_name = 'Николай';
 
 $categories = get_categories($connect);
