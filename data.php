@@ -84,14 +84,6 @@ function get_wagers_by_lot_id($connect, $lot_id)
  */
 function get_wagers_by_user_id($connect, $user_id)
 {
-//    $sql = "SELECT w.date as `date`, MAX(w.price) as `price`, l.id as lot_id , l.img as `img`, l.name as `name`, l.date_end, l.winner_id, c.name as `cat_name`
-//        FROM `wager` `w`
-//        JOIN `lot` `l` ON l.id = w.lot_id
-//        JOIN `category` `c` ON c.id = l.category_id
-//        WHERE w.author_id = '$user_id'
-//        GROUP BY lot_id
-//        ORDER BY w.date DESC";
-
     $sql = "SELECT NOW() - (w.date - 0) as `date`, MAX(w.price) as `price`, l.id as lot_id , l.img as `img`, l.name as `name`, l.date_end, l.winner_id, c.name as `cat_name`
         FROM `wager` `w`
         JOIN `lot` `l` ON l.id = w.lot_id
