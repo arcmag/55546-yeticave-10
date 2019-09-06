@@ -4,18 +4,18 @@ require_once 'init.php';
 
 $connect = connect_db(DB_CONFIG);
 
-if(is_user_authorization()) {
+if (is_user_authorization()) {
     $user = get_user_data($connect, $_SESSION['user_id']);
 }
 
-$categories = get_categories($connect);
+update_status_lots($connect);
 
-$page = $_GET['page'];
+$categories = get_categories($connect);
 
 $page_title = 'Главная страница';
 $page_template = include_template('main.php', [
     'categories' => $categories,
-    'announcement_list' => get_announcement_list($connect)
+    'announcement_list' => get_announcement_list($connect),
 ]);
 
 print(include_template('layout.php', [
