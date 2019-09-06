@@ -334,3 +334,61 @@ function update_status_lots($connect)
         }
     }
 }
+
+/**
+ * Возвращает прошедшее время с момента добавления ставки в отформатированном виде
+ *
+ * @param string $publication_date строка с датой добавления ставки
+ *
+ * @return string время в отформатированном виде
+ */
+function format_date_personal_lot($publication_date)
+{
+    $time_list = [
+        'sec' => 60,
+        'min' => 60 * 60,
+        'hour' => (60 * 60) * 24,
+        'day' => ((60 * 60) * 24) * 30,
+        'month' => (((60 * 60) * 24) * 30) * 12,
+    ];
+    $diff_timestamp = time() - strtotime($publication_date);
+    $str_res = '';
+    $time = 0;
+
+    if ($diff_timestamp < $time_list['sec']) {
+        $time = (int)$diff_timestamp;
+        $str_res .= $time.' '.get_noun_plural_form($time, 'секунда', 'секунды',
+                'секунд');
+    } else {
+        if ($diff_timestamp < $time_list['min']) {
+            $time = (int)($diff_timestamp / $time_list['sec']);
+            $str_res .= $time.' '.get_noun_plural_form($time, 'минута',
+                    'минуты', 'минут');
+        } else {
+            if ($diff_timestamp < $time_list['hour']) {
+                $time = (int)($diff_timestamp / $time_list['min']);
+                $str_res .= $time.' '.get_noun_plural_form($time, 'час', 'часа',
+                        'часов');
+            } else {
+                if ($diff_timestamp < $time_list['day']) {
+                    $time = (int)($diff_timestamp / $time_list['hour']);
+                    $str_res .= $time.' '.get_noun_plural_form($time, 'день',
+                            'дня', 'дней');
+                } else {
+                    if ($diff_timestamp < $time_list['month']) {
+                        $time = (int)($diff_timestamp / $time_list['day']);
+                        $str_res .= $time.' '.get_noun_plural_form($time,
+                                'месяц', 'месяца', 'месяцев');
+                    } else {
+                        $time = (int)($diff_timestamp / $time_list['month']);
+                        $str_res .= $time.' '.get_noun_plural_form($time, 'год',
+                                'года', 'лет');
+                    }
+                }
+            }
+        }
+    }
+
+    return $str_res.' назад';
+}
+

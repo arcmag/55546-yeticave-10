@@ -12,6 +12,7 @@
                     $wager_status = 'rates__item--end';
                 }
             }
+
             ?>
             <tr class="rates__item <?= $wager_status ?>">
                 <td class="rates__info">
@@ -41,7 +42,7 @@
                 <td class="rates__price"><?= htmlspecialchars($wager['price']) ?>
                     р
                 </td>
-                <td class="rates__time">___</td>
+                <td class="rates__time"><?= format_date_personal_lot($wager['date']); ?></td>
             </tr>
         <?php endforeach; ?>
     </table>
