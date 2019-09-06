@@ -7,12 +7,9 @@
             $wager_status = '';
             if ($data_wager_time['is_win']) {
                 $wager_status = 'rates__item--win';
-            } else {
-                if ($data_wager_time['is_finishing']) {
-                    $wager_status = 'rates__item--end';
-                }
+            } elseif ($data_wager_time['is_finishing']) {
+                $wager_status = 'rates__item--end';
             }
-
             ?>
             <tr class="rates__item <?= $wager_status ?>">
                 <td class="rates__info">

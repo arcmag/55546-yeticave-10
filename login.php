@@ -26,14 +26,14 @@ if (!empty($_POST)) {
 
         if (!$data_user) {
             $errors['email'] = 'Пользователя с таким e-mail не существует';
+        } elseif (!password_verify($_POST['password'],
+            $data_user['password'])
+        ) {
+            $errors['password'] = 'Введён не верный пароль';
         } else {
-            if (!password_verify($_POST['password'], $data_user['password'])) {
-                $errors['password'] = 'Введён не верный пароль';
-            } else {
-                user_authorization($data_user['id']);
-                header('Location: /');
-                exit;
-            }
+            user_authorization($data_user['id']);
+            header('Location: /');
+            exit;
         }
     }
 }

@@ -287,16 +287,15 @@ function get_wager_status($wager, $user_id)
         && time() < $time_end
     ) { // проверка, осталось ли меньше часа до конца торгов
         $is_close_to_completion = true;
-    } else {
-        if (time() > $time_end) { // торги закончились
-            $is_finishing = true;
+    } elseif (time() > $time_end) { // торги закончились
+        $is_finishing = true;
 
-            if ($wager['winner_id']
-                === $user_id
-            ) { // является ли автор максимальной ставки текущим пользователем
-                $is_win = true;
-            }
+        if ($wager['winner_id']
+            === $user_id
+        ) { // является ли автор максимальной ставки текущим пользователем
+            $is_win = true;
         }
+
     }
 
     return [
@@ -359,34 +358,26 @@ function format_date_personal_lot($publication_date)
         $time = (int)$diff_timestamp;
         $str_res .= $time.' '.get_noun_plural_form($time, 'секунда', 'секунды',
                 'секунд');
+    } elseif ($diff_timestamp < $time_list['min']) {
+        $time = (int)($diff_timestamp / $time_list['sec']);
+        $str_res .= $time.' '.get_noun_plural_form($time, 'минута',
+                'минуты', 'минут');
+    } elseif ($diff_timestamp < $time_list['hour']) {
+        $time = (int)($diff_timestamp / $time_list['min']);
+        $str_res .= $time.' '.get_noun_plural_form($time, 'час', 'часа',
+                'часов');
+    } elseif ($diff_timestamp < $time_list['day']) {
+        $time = (int)($diff_timestamp / $time_list['hour']);
+        $str_res .= $time.' '.get_noun_plural_form($time, 'день',
+                'дня', 'дней');
+    } elseif ($diff_timestamp < $time_list['month']) {
+        $time = (int)($diff_timestamp / $time_list['day']);
+        $str_res .= $time.' '.get_noun_plural_form($time,
+                'месяц', 'месяца', 'месяцев');
     } else {
-        if ($diff_timestamp < $time_list['min']) {
-            $time = (int)($diff_timestamp / $time_list['sec']);
-            $str_res .= $time.' '.get_noun_plural_form($time, 'минута',
-                    'минуты', 'минут');
-        } else {
-            if ($diff_timestamp < $time_list['hour']) {
-                $time = (int)($diff_timestamp / $time_list['min']);
-                $str_res .= $time.' '.get_noun_plural_form($time, 'час', 'часа',
-                        'часов');
-            } else {
-                if ($diff_timestamp < $time_list['day']) {
-                    $time = (int)($diff_timestamp / $time_list['hour']);
-                    $str_res .= $time.' '.get_noun_plural_form($time, 'день',
-                            'дня', 'дней');
-                } else {
-                    if ($diff_timestamp < $time_list['month']) {
-                        $time = (int)($diff_timestamp / $time_list['day']);
-                        $str_res .= $time.' '.get_noun_plural_form($time,
-                                'месяц', 'месяца', 'месяцев');
-                    } else {
-                        $time = (int)($diff_timestamp / $time_list['month']);
-                        $str_res .= $time.' '.get_noun_plural_form($time, 'год',
-                                'года', 'лет');
-                    }
-                }
-            }
-        }
+        $time = (int)($diff_timestamp / $time_list['month']);
+        $str_res .= $time.' '.get_noun_plural_form($time, 'год',
+                'года', 'лет');
     }
 
     return $str_res.' назад';
