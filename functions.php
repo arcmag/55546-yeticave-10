@@ -350,7 +350,8 @@ function format_date_personal_lot($publication_date)
         'day' => ((60 * 60) * 24) * 30,
         'month' => (((60 * 60) * 24) * 30) * 12,
     ];
-    $diff_timestamp = time() - strtotime($publication_date);
+
+    $diff_timestamp = $publication_date;
     $str_res = '';
     $time = 0;
 
