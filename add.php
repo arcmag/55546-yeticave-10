@@ -65,9 +65,13 @@ if (!empty($_POST)) {
     }
 
     if (count($errors) === 0) {
-        create_new_lot($connect, $_POST, $_FILES[$file_field],
+        $res = create_new_lot($connect, $_POST, $_FILES[$file_field],
             $_SESSION['user_id']);
-        exit;
+
+        if ($res) {
+            header("Location: /lot.php?id=".mysqli_insert_id($connect));
+            exit;
+        }
     }
 }
 

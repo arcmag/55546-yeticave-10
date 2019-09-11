@@ -31,7 +31,8 @@ if ($data_lot === -1) {
             $data_lot = get_lot_by_id($connect, $data_lot['id']);
         } else {
             $cost_error
-                = "Цена ставки должна быть выше текущей цены {$current_price} + определённый шаг ставки {$data_lot['bid_step']}";
+                = "Цена ставки должна быть выше текущей цены {$current_price} 
+                    + определённый шаг ставки {$data_lot['bid_step']}";
         }
     }
 

@@ -7,5 +7,3 @@ const DB_CONFIG
     'PASSWORD' => '',
     'DB' => 'yeticave',
 ];
-
-return DB_CONFIG;

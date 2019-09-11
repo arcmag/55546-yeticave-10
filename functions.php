@@ -34,7 +34,8 @@ function to_format_currency($price)
  */
 function get_dt_range($date)
 {
-    return explode(':', date('H:i', strtotime($date) - time()));
+    return explode(':',
+        date('H:i', strtotime($date) - time()));
 }
 
 /**
@@ -98,7 +99,8 @@ function validate_field($value, $rules)
                 $config['max'])
         ) {
             $error
-                = "Не корректная длинна строки, минимальная допустимая длина {$config['min']}, a максимальная {$config['max']}";
+                = "Не корректная длинна строки, минимальная допустимая длина 
+                    {$config['min']}, a максимальная {$config['max']}";
         }
 
         if ($rule === 'min' && $value < $config) {
@@ -114,7 +116,9 @@ function validate_field($value, $rules)
             $error = "Не верный формат строки";
         }
 
-        if ($config === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+        if ($config === 'email'
+            && !filter_var($value, FILTER_VALIDATE_EMAIL)
+        ) {
             $error = "Не корретный e-mail";
         }
     }
@@ -138,7 +142,8 @@ function create_new_lot($connect, $data_lot, $img, $user_id)
 
     $stmt = mysqli_prepare($connect, "
         INSERT INTO `lot`
-        (`date_create`, `name`, `description`, `category_id`, `start_price`, `img`, `date_end`, `bid_step`, `author_id`) VALUES
+        (`date_create`, `name`, `description`, `category_id`, `start_price`,
+        `img`, `date_end`, `bid_step`, `author_id`) VALUES
         (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)");
 
     mysqli_stmt_bind_param($stmt, 'ssssssss',
@@ -153,9 +158,16 @@ function create_new_lot($connect, $data_lot, $img, $user_id)
     );
 
     if (mysqli_stmt_execute($stmt)) {
+        if (!file_exists('./uploads')) {
+            mkdir('./uploads');
+        }
+
         move_uploaded_file($img['tmp_name'], $img_path.$img_name);
-        header("Location: /?page=lot&lot_id=".mysqli_insert_id($connect));
+
+        return true;
     }
+
+    return false;
 }
 
 /**
@@ -188,8 +200,13 @@ function create_new_user($connect, $data)
         (`date_registration`, `email`, `name`, `password`, `contacts`) VALUES
         (NOW(), ?, ?, ?, ?)");
 
-    mysqli_stmt_bind_param($stmt, 'ssss', $data['email'], $data['name'],
-        password_hash($data['password'], PASSWORD_DEFAULT), $data['message']);
+    mysqli_stmt_bind_param(
+        $stmt, 'ssss',
+        $data['email'],
+        $data['name'],
+        password_hash($data['password'], PASSWORD_DEFAULT),
+        $data['message']
+    );
     mysqli_stmt_execute($stmt);
 }
 
@@ -263,8 +280,10 @@ function get_user_data($connect, $user_id)
 function create_new_wager($connect, $lot_id, $user_id, $price)
 {
     $stmt = mysqli_prepare($connect,
-        'INSERT INTO `wager` (`date`, `price`, `author_id`, `lot_id`) VALUES (NOW(), ?, ?, ?)');
-    mysqli_stmt_bind_param($stmt, 'sss', $price, $user_id, $lot_id);
+        'INSERT INTO `wager` (`date`, `price`, `author_id`, `lot_id`)
+                VALUES (NOW(), ?, ?, ?)');
+    mysqli_stmt_bind_param($stmt, 'sss', $price,
+        $user_id, $lot_id);
     mysqli_stmt_execute($stmt);
 }
 
@@ -328,7 +347,8 @@ function update_status_lots($connect)
             $lot_id = $lot['id'];
             $author_id = $lot['author_id'];
             mysqli_query($connect,
-                "UPDATE `lot` SET winner_id = '$author_id' WHERE id = '$lot_id'");
+                "UPDATE `lot` SET winner_id = '$author_id' 
+                WHERE id = '$lot_id'");
             // отправить письмо победителю
         }
     }
@@ -357,16 +377,16 @@ function format_date_personal_lot($publication_date)
 
     if ($diff_timestamp < $time_list['sec']) {
         $time = (int)$diff_timestamp;
-        $str_res .= $time.' '.get_noun_plural_form($time, 'секунда', 'секунды',
-                'секунд');
+        $str_res .= $time.' '.get_noun_plural_form($time, 'секунда',
+                'секунды', 'секунд');
     } elseif ($diff_timestamp < $time_list['min']) {
         $time = (int)($diff_timestamp / $time_list['sec']);
         $str_res .= $time.' '.get_noun_plural_form($time, 'минута',
                 'минуты', 'минут');
     } elseif ($diff_timestamp < $time_list['hour']) {
         $time = (int)($diff_timestamp / $time_list['min']);
-        $str_res .= $time.' '.get_noun_plural_form($time, 'час', 'часа',
-                'часов');
+        $str_res .= $time.' '.get_noun_plural_form($time, 'час',
+                'часа', 'часов');
     } elseif ($diff_timestamp < $time_list['day']) {
         $time = (int)($diff_timestamp / $time_list['hour']);
         $str_res .= $time.' '.get_noun_plural_form($time, 'день',
@@ -382,5 +402,64 @@ function format_date_personal_lot($publication_date)
     }
 
     return $str_res.' назад';
+}
+
+/**
+ * Возвращает количество найденных записей совпадающих с указанной строкой
+ *
+ * @param object $connect объект соединения с базой данных
+ * @param string $search  строка по которой производится поиск
+ *
+ * @return number mysqli_num_rows число в количествоам найденных столбцов
+ */
+function get_search_result_count($connect, $search)
+{
+    $search = mysqli_real_escape_string($connect, $search);
+
+    $res = mysqli_query($connect,
+        "
+        SELECT * FROM `lot` `l`
+        WHERE l.date_end > NOW() AND
+        MATCH(l.name, l.description) AGAINST('$search')");
+
+    return mysqli_num_rows($res);
+}
+
+/**
+ * Возвращает найденные записи совпадающие с указанной строкой
+ *
+ * @param object $connect объект соединения с базой данных
+ * @param string $search  строка по которой производится поиск
+ * @param number $max_page_result
+ * @param number $page    число с текущей страницей
+ *
+ * @return array mysqli_fetch_all массив со списком результатов поиска
+ */
+function get_search_result($connect, $search, $max_page_result, $page)
+{
+    $search = mysqli_real_escape_string($connect, $search);
+    $max_page_result = mysqli_real_escape_string($connect, $max_page_result);
+    $page = mysqli_real_escape_string($connect, $page);
+
+    $offset = ($page - 1) * $max_page_result;
+
+    $res = mysqli_query($connect,
+        "
+        SELECT
+        l.id,
+        l.name as name,
+        l.start_price,
+        l.img,
+        c.name as category,
+        l.date_end,
+        MATCH(l.name, l.description) AGAINST('$search') as score
+        FROM `lot` `l`
+        JOIN `category` `c` ON c.id = l.category_id
+        WHERE
+        l.date_end > NOW() AND
+        MATCH(l.name, l.description) AGAINST('$search')
+        ORDER BY l.date_create DESC LIMIT $offset, $max_page_result");
+
+    return mysqli_fetch_all($res, MYSQLI_ASSOC);
 }
 

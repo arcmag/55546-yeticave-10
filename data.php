@@ -70,7 +70,10 @@ function get_wagers_by_lot_id($connect, $lot_id)
 {
     return mysqli_fetch_all(mysqli_query(
         $connect,
-        "SELECT w.*, u.name as author FROM `wager` `w` LEFT JOIN `user` `u` ON u.id = w.author_id WHERE w.lot_id = $lot_id ORDER BY w.date DESC"),
+        "SELECT w.*, u.name as author
+            FROM `wager` `w`
+            LEFT JOIN `user` `u` ON u.id = w.author_id
+            WHERE w.lot_id = $lot_id ORDER BY w.date DESC"),
         MYSQLI_ASSOC);
 }
 
@@ -84,7 +87,14 @@ function get_wagers_by_lot_id($connect, $lot_id)
  */
 function get_wagers_by_user_id($connect, $user_id)
 {
-    $sql = "SELECT NOW() - (w.date - 0) as `date`, MAX(w.price) as `price`, l.id as lot_id , l.img as `img`, l.name as `name`, l.date_end, l.winner_id, c.name as `cat_name`
+    $sql = "SELECT NOW() - (w.date - 0) as `date`, 
+        MAX(w.price) as `price`, 
+        l.id as lot_id , 
+        l.img as `img`, 
+        l.name as `name`, 
+        l.date_end, 
+        l.winner_id, 
+        c.name as `cat_name`
         FROM `wager` `w`
         JOIN `lot` `l` ON l.id = w.lot_id
         JOIN `category` `c` ON c.id = l.category_id
