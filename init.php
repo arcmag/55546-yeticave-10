@@ -4,7 +4,6 @@ error_reporting(E_ALL);
 
 session_start();
 
-require_once 'config/global.php';
 require_once 'config/db.php';
 
 require_once './helpers.php';
