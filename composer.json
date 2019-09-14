@@ -1,0 +1,12 @@
+{
+  "name": "arcmag/55546-yeticave-10",
+  "authors": [
+    {
+      "name": "arcmag",
+      "email": "arcmag-work@mail.ru"
+    }
+  ],
+  "require": {
+    "swiftmailer/swiftmailer": "^6.2"
+  }
+}

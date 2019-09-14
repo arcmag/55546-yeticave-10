@@ -4,7 +4,10 @@ error_reporting(E_ALL);
 
 session_start();
 
+require_once 'vendor/autoload.php';
+
 require_once 'config/db.php';
+require_once 'config/mail_winner.php';
 
 require_once './helpers.php';
 require_once './data.php';

@@ -25,30 +25,24 @@ $field_rules = [
     ],
 ];
 
-// проверка полей
 if (!empty($_POST)) {
     foreach ($field_rules as $field_name => $rules) {
-        // получение текущего значения поля
-        $value = $_POST[$field_name];
+        $value = trim($_POST[$field_name]);
 
-        // проверка на заполненность
         if (empty($value)) {
             $errors[$field_name] = 'Поле не заполнено';
             continue;
         }
 
-        // если нет правил валидации, пропуск итерации
         if (!$rules) {
             continue;
         }
 
-        // проход по списку установленных правил валидации
         if ($error = validate_field($value, $rules)) {
             $errors[$field_name] = $error;
         }
     }
 
-    // проверка файла
     $file_field = 'lot-img';
     $img_types = ['image/png', 'image/jpeg'];
     if (isset($_FILES[$file_field])

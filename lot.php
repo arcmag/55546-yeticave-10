@@ -19,20 +19,19 @@ if ($data_lot === -1) {
     $wagers = get_wagers_by_lot_id($connect, $data_lot['id']);
     $cost_error = null;
 
+    $min_cost = empty($wagers) ? $data_lot['start_price'] :
+        $wagers[0]['price'] + $data_lot['bid_step'];
+
     if (!empty($_POST)) {
         $cost = (int)$_POST['cost'];
 
-        $current_price = $wagers[0]['price'] ?? $data_lot['start_price'];
-
-        if ($cost >= $current_price + $data_lot['bid_step']) {
+        if ($cost >= $min_cost) {
             create_new_wager($connect, $data_lot['id'], $_SESSION['user_id'],
                 $cost);
             $wagers = get_wagers_by_lot_id($connect, $data_lot['id']);
             $data_lot = get_lot_by_id($connect, $data_lot['id']);
         } else {
-            $cost_error
-                = "Цена ставки должна быть выше текущей цены {$current_price} 
-                    + определённый шаг ставки {$data_lot['bid_step']}";
+            $cost_error = "Минимально допустимая сумма ставки: {$min_cost}";
         }
     }
 
@@ -42,6 +41,7 @@ if ($data_lot === -1) {
         'lot' => $data_lot,
         'wagers' => $wagers,
         'cost_error' => $cost_error,
+        'min_cost' => $min_cost
     ]);
 }
 
@@ -49,5 +49,5 @@ print(include_template('layout.php', [
     'title' => $page_title,
     'categories' => $categories,
     'content' => $page_template,
-    'user' => $user,
+    'user' => $user
 ]));

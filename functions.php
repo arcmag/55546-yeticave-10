@@ -133,6 +133,8 @@ function validate_field($value, $rules)
  * @param array  $data_lot ассоциативный массив с данными нового лота
  * @param array  $img      ассоциативный массив $_FILES с данными изображения для нового лота
  * @param string $user_id  строка с идентификатором пользователя создавшего новый лот
+ *
+ * @return boolean результат операции, в случае успеха вернёт true, иначе false
  */
 function create_new_lot($connect, $data_lot, $img, $user_id)
 {
@@ -188,25 +190,27 @@ function email_exist($connect, $email)
 }
 
 /**
- * Создаёт новую запись в базе данных, добавляя туда нового пользователя с указанными данными
+ * Создаёт запись в базе данных, добавляя туда нового пользователя с указанными данными
  *
  * @param object $connect объект соединения с базой данных
  * @param object $data    ассоциативный массив с данными нового пользователя
  */
 function create_new_user($connect, $data)
 {
-    $stmt = mysqli_prepare($connect, "
-        INSERT INTO `user`
+    $stmt = mysqli_prepare($connect,
+        "INSERT INTO `user`
         (`date_registration`, `email`, `name`, `password`, `contacts`) VALUES
         (NOW(), ?, ?, ?, ?)");
+
+    $pass = password_hash($data['password'], PASSWORD_DEFAULT);
 
     mysqli_stmt_bind_param(
         $stmt, 'ssss',
         $data['email'],
         $data['name'],
-        password_hash($data['password'], PASSWORD_DEFAULT),
-        $data['message']
-    );
+        $pass,
+        $data['message']);
+
     mysqli_stmt_execute($stmt);
 }
 
@@ -256,20 +260,6 @@ function is_user_authorization()
 }
 
 /**
- * Возвращает данные пользователя с указанным идентификатором
- *
- * @param object $connect объект соединения с базой данных
- * @param string $user_id строка с идентификатором пользователя
- *
- * @return array ассоциативный массив с данными пользователя
- */
-function get_user_data($connect, $user_id)
-{
-    return mysqli_fetch_assoc(mysqli_query($connect,
-        "SELECT * FROM `user` WHERE id = ".$user_id));
-}
-
-/**
  * Создаёт новую запись ставки в базе данных с переданными данными
  *
  * @param object $connect объект соединения с базой данных
@@ -288,40 +278,32 @@ function create_new_wager($connect, $lot_id, $user_id, $price)
 }
 
 /**
- * Формирует ассоциативный массив с данными текущего состояния ставки
+ * Отправляет письмо победителю в торгах за лот
  *
- * @param array  $wager   ассоциативный массив с данными ставки
- * @param string $user_id строка с идентификатором пользователя
- *
- * @return array ассоциативный массив с данными текущего состояния ставки
+ * @param string  $user_email строка с почтовым ящиком победившего пользователя куда будет отправлено письмо
+ * @param string  $user_name  строка с именем победившего пользователя
+ * @param integer $lot_id     строка с идентификатором выигранного лота
+ * @param string  $lot_name   строка с именем выигранного лота
  */
-function get_wager_status($wager, $user_id)
+function send_mail_for_winner($user_email, $user_name, $lot_id, $lot_name)
 {
-    $time_end = strtotime($wager['date_end']);
-    $is_close_to_completion = false;
-    $is_finishing = false;
-    $is_win = false;
+    $msg_content = include_template('email.php', [
+        'user_name' => $user_name,
+        'lot_id' => $lot_id,
+        'lot_name' => $lot_name,
+    ]);
 
-    if ((time() + 3600) > $time_end
-        && time() < $time_end
-    ) { // проверка, осталось ли меньше часа до конца торгов
-        $is_close_to_completion = true;
-    } elseif (time() > $time_end) { // торги закончились
-        $is_finishing = true;
+    $transport = (new Swift_SmtpTransport(MAIL_WINNER_CONFIG['HOST'],
+        MAIL_WINNER_CONFIG['PORT']))
+        ->setUsername(MAIL_WINNER_CONFIG['USER'])
+        ->setPassword(MAIL_WINNER_CONFIG['PASSWORD']);
 
-        if ($wager['winner_id']
-            === $user_id
-        ) { // является ли автор максимальной ставки текущим пользователем
-            $is_win = true;
-        }
+    $message = (new Swift_Message('Ваша ставка победила'))
+    ->setTo([$user_email => $user_name])
+    ->setBody($msg_content, 'text/html')
+    ->setFrom([MAIL_WINNER_CONFIG['FROM'] => 'YetiCave']);
 
-    }
-
-    return [
-        'is_close_to_completion' => $is_close_to_completion,
-        'is_finishing' => $is_finishing,
-        'is_win' => $is_win,
-    ];
+    (new Swift_Mailer($transport))->send($message);
 }
 
 /**
@@ -331,26 +313,46 @@ function get_wager_status($wager, $user_id)
  */
 function update_status_lots($connect)
 {
-    $res = mysqli_fetch_all(
+    $lots = mysqli_fetch_all(
         mysqli_query($connect, '
-            SELECT l.id, MAX(w.price) AS price, w.author_id
-            FROM `lot` `l`
-            JOIN `wager` `w` ON w.lot_id = l.id
-            WHERE l.winner_id IS NULL AND NOW() > l.date_end
-            GROUP BY l.id'
-        ),
-        MYSQLI_ASSOC
-    );
+            SELECT * FROM `lot`
+            WHERE winner_id IS NULL AND NOW() > date_end'
+        ), MYSQLI_ASSOC);
+    if (empty($lots)) {
+        return;
+    }
 
-    if (!empty($res)) {
-        foreach ($res as $lot) {
-            $lot_id = $lot['id'];
-            $author_id = $lot['author_id'];
-            mysqli_query($connect,
-                "UPDATE `lot` SET winner_id = '$author_id' 
-                WHERE id = '$lot_id'");
-            // отправить письмо победителю
+    for ($i = 0; $i < count($lots); $i++) {
+        $wagers = mysqli_fetch_all(
+            mysqli_query($connect, '
+            SELECT * FROM `wager`
+            WHERE lot_id = '.$lots[$i]['id']), MYSQLI_ASSOC);
+
+        $lots[$i]['max_wager'] = null;
+        if (empty($wagers)) {
+            continue;
         }
+
+        $lots[$i]['max_wager'] = array_reduce($wagers, function ($a, $b) {
+            return $a['price'] > $b['price'] ? $a : $b;
+        });
+    }
+
+    foreach ($lots as $lot) {
+        $wager = $lot['max_wager'];
+        if (empty($wager)) {
+            continue;
+        }
+
+        $lot_id = $lot['id'];
+        $author_id = $wager['author_id'];
+        $user = get_user_data($connect, $author_id);
+        mysqli_query($connect,
+            "UPDATE `lot` SET winner_id = '$author_id'
+                WHERE id = '$lot_id'");
+
+        send_mail_for_winner($user['email'], $user['name'],
+            $lot_id, $lot['name']);
     }
 }
 
@@ -403,63 +405,3 @@ function format_date_personal_lot($publication_date)
 
     return $str_res.' назад';
 }
-
-/**
- * Возвращает количество найденных записей совпадающих с указанной строкой
- *
- * @param object $connect объект соединения с базой данных
- * @param string $search  строка по которой производится поиск
- *
- * @return number mysqli_num_rows число в количествоам найденных столбцов
- */
-function get_search_result_count($connect, $search)
-{
-    $search = mysqli_real_escape_string($connect, $search);
-
-    $res = mysqli_query($connect,
-        "
-        SELECT * FROM `lot` `l`
-        WHERE l.date_end > NOW() AND
-        MATCH(l.name, l.description) AGAINST('$search')");
-
-    return mysqli_num_rows($res);
-}
-
-/**
- * Возвращает найденные записи совпадающие с указанной строкой
- *
- * @param object $connect объект соединения с базой данных
- * @param string $search  строка по которой производится поиск
- * @param number $max_page_result
- * @param number $page    число с текущей страницей
- *
- * @return array mysqli_fetch_all массив со списком результатов поиска
- */
-function get_search_result($connect, $search, $max_page_result, $page)
-{
-    $search = mysqli_real_escape_string($connect, $search);
-    $max_page_result = mysqli_real_escape_string($connect, $max_page_result);
-    $page = mysqli_real_escape_string($connect, $page);
-
-    $offset = ($page - 1) * $max_page_result;
-
-    $res = mysqli_query($connect,
-        "
-        SELECT
-        l.id,
-        l.name as name,
-        l.start_price,
-        l.img,
-        c.name as category,
-        l.date_end,
-        MATCH(l.name, l.description) AGAINST('$search') as score
-        FROM `lot` `l`
-        JOIN `category` `c` ON c.id = l.category_id
-        WHERE
-        l.date_end > NOW() AND
-        MATCH(l.name, l.description) AGAINST('$search')
-        ORDER BY l.date_create DESC LIMIT $offset, $max_page_result");
-
-    return mysqli_fetch_all($res, MYSQLI_ASSOC);
-}
-
