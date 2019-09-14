@@ -13,11 +13,11 @@
 </section>
 <section class="lots">
     <div class="lots__header">
-        <h2>Открытые лоты</h2>
+        <h2>Все лоты в категории: <?= $category_name ?></h2>
     </div>
     <ul class="lots__list">
         <?php foreach ($announcement_list as $value): ?>
-            <?php $expiration_date = get_dt_range($value['date_end']) ?>
+            <?php $expiration_date = get_dt_range($value['date_end']); ?>
             <li class="lots__item lot">
                 <div class="lot__image">
                     <img src="<?= htmlspecialchars($value['img']) ?>"
@@ -36,7 +36,6 @@
                                 class="lot__cost"><?= htmlspecialchars(to_format_currency($value['start_price'])) ?><b
                                     class="rub">р</b></span>
                         </div>
-
                         <div class="lot__timer timer <?= $expiration_date[0]
                         === '00' ? 'timer—finishing'
                             : '' ?>"><?= $expiration_date[0].':'
@@ -46,4 +45,23 @@
             </li>
         <?php endforeach; ?>
     </ul>
+
+    <?php if ($count_pages > 1): ?>
+        <ul class="pagination-list">
+            <li class="pagination-item pagination-item-prev">
+                <a href="lots-by-category.php?category=<?= $category_id ?>&page=<?= $current_page
+                > 1 ? $current_page - 1 : 1 ?>">Назад</a>
+            </li>
+            <?php for ($i = 1; $i <= $count_pages; $i++): ?>
+                <li class="pagination-item <?= $i === $current_page
+                    ? 'pagination-item-active' : '' ?>">
+                    <a href="lots-by-category.php?category=<?= $category_id ?>&page=<?= $i ?>"><?= $i ?></a>
+                </li>
+            <?php endfor; ?>
+            <li class="pagination-item pagination-item-next">
+                <a href="lots-by-category.php?category=<?= $category_id ?>&page=<?= $current_page
+                < $count_pages ? $current_page + 1 : $count_pages ?>">Вперед</a>
+            </li>
+        </ul>
+    <?php endif; ?>
 </section>

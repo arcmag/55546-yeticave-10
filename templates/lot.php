@@ -36,9 +36,7 @@
                         </div>
                         <div class="lot-item__min-cost">
                             Мин. ставка
-                            <span><?= to_format_currency(($lot['max_wager'] ??
-                                        $lot['start_price']) + ($lot['bid_step']
-                                        ?? 0)) ?> р</span>
+                            <span><?= to_format_currency($min_cost) ?> р</span>
                         </div>
                     </div>
                     <form class="lot-item__form <?= isset($cost_error)

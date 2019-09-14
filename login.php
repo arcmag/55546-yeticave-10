@@ -14,12 +14,11 @@ $field_rules = ['email' => null, 'password' => null];
 
 if (!empty($_POST)) {
     foreach ($field_rules as $field_name => $rules) {
-        if (empty($_POST[$field_name])) {
+        if (empty(trim($_POST[$field_name]))) {
             $errors[$field_name] = 'Поле не заполнено';
             continue;
         }
     }
-
 
     if (empty($errors['password']) && empty($errors['email'])) {
         $data_user = check_user_data($connect, $_POST['email']);

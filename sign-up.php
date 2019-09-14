@@ -20,7 +20,7 @@ $field_rules = [
 
 if (!empty($_POST)) {
     foreach ($field_rules as $field_name => $rules) {
-        $value = $_POST[$field_name];
+        $value = trim($_POST[$field_name]);
 
         if (empty($value)) {
             $errors[$field_name] = 'Поле не заполнено';
