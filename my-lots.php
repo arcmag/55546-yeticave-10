@@ -5,7 +5,7 @@ require_once 'init.php';
 $connect = connect_db(DB_CONFIG);
 
 if (!is_user_authorization()) {
-    header('Location: /');
+    header('Location: /login.php');
 }
 
 $categories = get_categories($connect);
