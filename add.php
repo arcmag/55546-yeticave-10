@@ -4,7 +4,7 @@ require_once 'init.php';
 
 if (!is_user_authorization()) {
     http_response_code(403);
-    header('Location: /');
+    header('Location: /login.php');
     exit;
 }
 
@@ -14,7 +14,7 @@ $user = get_user_data($connect, $_SESSION['user_id']);
 
 $errors = [];
 $field_rules = [
-    'lot-name' => ['length' => ['min' => 10, 'max' => 255]],
+    'lot-name' => ['length' => ['min' => 3, 'max' => 255]],
     'category' => null,
     'message' => ['length' => ['min' => 10, 'max' => 2000]],
     'lot-rate' => ['min' => 1],
