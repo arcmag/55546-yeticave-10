@@ -2,15 +2,9 @@
 
 require_once 'init.php';
 
-$connect = connect_db(DB_CONFIG);
-
-if (is_user_authorization()) {
-    $user = get_user_data($connect, $_SESSION['user_id']);
-}
-
 $categories = get_categories($connect);
-$category_id = $_GET['category'] ?? '';
-$current_page = (int)($_GET['page'] ?? 1);
+$category_id = empty($_GET['category']) ? 1 : (int)$_GET['category'];
+$current_page = empty($_GET['page']) ? 1 : (int)$_GET['page'];
 $category_idx = array_search($category_id, array_column($categories, 'id'));
 $category_name = $categories[$category_idx]['name'];
 

@@ -8,10 +8,6 @@ if (!is_user_authorization()) {
     exit;
 }
 
-$connect = connect_db(DB_CONFIG);
-
-$user = get_user_data($connect, $_SESSION['user_id']);
-
 $errors = [];
 $field_rules = [
     'lot-name' => ['length' => ['min' => 3, 'max' => 255]],
@@ -21,7 +17,7 @@ $field_rules = [
     'lot-step' => ['min' => 1],
     'lot-date' => [
         'match' => '/^\d{4}-\d{2}-\d{2}$/',
-        'check_date' => time() + 3600 * 24,
+        'check_date' => true,
     ],
 ];
 

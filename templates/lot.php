@@ -1,38 +1,54 @@
 <section class="lot-item container">
-    <h2><?= $lot['name'] ?></h2>
+    <h2><?= isset($lot['name']) ? $lot['name'] : '' ?></h2>
     <div class="lot-item__content">
         <div class="lot-item__left">
             <div class="lot-item__image">
-                <img src="../<?= htmlspecialchars($lot['img']) ?>" width="730"
-                     height="548" alt="Сноуборд">
+                <img src="../<?= isset($lot['img'])
+                    ? htmlspecialchars($lot['img']) : '' ?>"
+                     width="730" height="548" alt="Сноуборд">
             </div>
             <p class="lot-item__category">Категория:
-                <span><?= $lot['category'] ?></span></p>
-            <p class="lot-item__description"><?= htmlspecialchars($lot['description']) ?></p>
+                <span><?= isset($lot['category']) ? $lot['category']
+                        : '' ?></span></p>
+            <p class="lot-item__description"><?= isset($lot['description']) ?
+                    htmlspecialchars($lot['description']) : '' ?></p>
         </div>
         <div class="lot-item__right">
             <?php
-            $last_wager = $wagers[0] ?? ['author_id' => -1];
+            $last_wager = isset($wagers[0]) ? $wagers[0] : ['author_id' => -1];
+            $last_wager_author_id = isset($last_wager['author_id'])
+                ? $last_wager['author_id'] : '';
+
+            $lot_date_end = isset($lot['date_end']) ? $lot['date_end'] : '';
+            $lot_author_id = isset($lot['author_id']) ? $lot['author_id'] : '';
+            $lot_max_wager = isset($lot['max_wager']) ? $lot['max_wager'] : '';
+            $lot_start_price = isset($lot['start_price']) ? $lot['start_price']
+                : '';
 
             if (
-                is_user_authorization() && strtotime($lot['date_end']) > time()
-                && $lot['author_id'] !== (int)$_SESSION['user_id']
-                && $last_wager['author_id'] !== $_SESSION['user_id']
+                is_user_authorization() && strtotime($lot_date_end) > time()
+                && $lot_author_id !== $_SESSION['user_id']
+                && $last_wager_author_id !== $_SESSION['user_id']
             ):
                 ?>
                 <div class="lot-item__state">
-                    <?php $expiration_date = get_dt_range($lot['date_end']); ?>
-                    <div class="lot-item__timer timer <?= $expiration_date[0]
-                    === '00' ? 'timer—finishing' : '' ?>">
-                        <?= implode(':', $expiration_date) ?>
+                    <?php
+                    $expiration_date = get_date_range($lot_date_end);
+                    $expiration_date_arr = explode(':', $expiration_date);
+                    ?>
+                    <div
+                        class="lot-item__timer timer <?= $expiration_date_arr[0]
+                        === '00' ? 'timer--finishing' : '' ?>">
+                        <?= $expiration_date ?>
                     </div>
 
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
                             <span
-                                class="lot-item__cost"><?= to_format_currency($lot['max_wager']
-                                    ?? $lot['start_price']) ?></span>
+                                class="lot-item__cost"><?= to_format_currency(!empty($lot_max_wager)
+                                    ? $lot_max_wager
+                                    : $lot_start_price) ?></span>
                         </div>
                         <div class="lot-item__min-cost">
                             Мин. ставка
@@ -60,12 +76,19 @@
                 <table class="history__list">
                     <?php foreach ($wagers as $wager): ?>
                         <?php
-                        $date = date('y.m.d', strtotime($wager['date']));
-                        $time = date('h:m', strtotime($wager['date']));
+                        $wager_date = isset($wager['date']) ? $wager['date']
+                            : '';
+                        $wager_author = isset($wager['author'])
+                            ? $wager['author'] : '';
+                        $wager_price = isset($wager['price']) ? $wager['price']
+                            : '';
+
+                        $date = date('y.m.d', strtotime($wager_date));
+                        $time = date('h:m', strtotime($wager_date));
                         ?>
                         <tr class="history__item">
-                            <td class="history__name"><?= htmlspecialchars($wager['author']) ?></td>
-                            <td class="history__price"><?= to_format_currency($wager['price']) ?>
+                            <td class="history__name"><?= htmlspecialchars($wager_author) ?></td>
+                            <td class="history__price"><?= to_format_currency($wager_price) ?>
                                 р
                             </td>
                             <td class="history__time"><?= $date.' в '

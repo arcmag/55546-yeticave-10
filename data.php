@@ -88,17 +88,17 @@ function get_lots_by_category($connect, $category_id, $max_page_result, $page)
  */
 function get_lot_by_id($connect, $lot_id)
 {
-    $stmt = mysqli_prepare($connect, "
-        SELECT l.*, c.name as category, MAX(w.price) as max_wager
+    $lot_id = mysqli_real_escape_string($connect, $lot_id);
+
+    $query = "SELECT l.*, c.name as category,
+		(SELECT MAX(w.price) FROM `wager` `w` WHERE w.lot_id = $lot_id) as max_wager
         FROM `lot` `l`
         JOIN `category` `c` ON c.id = l.category_id
-        JOIN `wager` `w` ON w.lot_id = l.id
-        WHERE l.id = ?
-        ");
-    mysqli_stmt_bind_param($stmt, 's', $lot_id);
-    mysqli_stmt_execute($stmt);
+        WHERE l.id = $lot_id";
 
-    return mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?? -1;
+    $res = mysqli_query($connect, $query);
+
+    return mysqli_fetch_assoc($res);
 }
 
 /**
@@ -130,22 +130,31 @@ function get_wagers_by_lot_id($connect, $lot_id)
  */
 function get_wagers_by_user_id($connect, $user_id)
 {
-    $sql = "SELECT NOW() - (w.date - 0) as `date`, 
-        MAX(w.price) as `price`, 
-        l.id as lot_id , 
-        l.img as `img`, 
-        l.name as `name`, 
-        l.date_end, 
-        l.winner_id, 
+    $user_id = mysqli_real_escape_string($connect, $user_id);
+    $sql = "SELECT NOW() - w.date as `date`,
+        w.price as `price`,
+        l.id as lot_id ,
+        l.img as `img`,
+        l.name as `name`,
+        l.date_end,
+        l.winner_id,
         c.name as `cat_name`
         FROM `wager` `w`
         JOIN `lot` `l` ON l.id = w.lot_id
         JOIN `category` `c` ON c.id = l.category_id
         WHERE w.author_id = '$user_id'
-        GROUP BY lot_id
         ORDER BY w.date DESC";
+    $wagers = mysqli_fetch_all(mysqli_query($connect, $sql), MYSQLI_ASSOC);
 
-    return mysqli_fetch_all(mysqli_query($connect, $sql), MYSQLI_ASSOC);
+    $res = [];
+    foreach ($wagers as $wager) {
+        $id = $wager['lot_id'];
+        if (empty($res[$id]) || ($res[$id]['price'] < $wager['price'])) {
+            $res[$id] = $wager;
+        }
+    }
+
+    return $res;
 }
 
 /**

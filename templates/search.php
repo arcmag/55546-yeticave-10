@@ -8,20 +8,33 @@
         <?php else: ?>
             <ul class="lots__list">
                 <? foreach ($result as $lot): ?>
-                    <?php $expiration_date = get_dt_range($lot['date_end']); ?>
+                    <?php
+                    $lot_date_end = isset($lot['date_end']) ? $lot['date_end']
+                        : '';
+                    $lot_img = isset($lot['img']) ? $lot['img'] : '';
+                    $lot_category = isset($lot['category']) ? $lot['category']
+                        : '';
+                    $lot_id = isset($lot['id']) ? $lot['id'] : '';
+                    $lot_name = isset($lot['name']) ? $lot['name'] : '';
+                    $lot_start_price = isset($lot['start_price'])
+                        ? $lot['start_price'] : '';
+
+                    $expiration_date = get_date_range($lot_date_end);
+                    $expiration_date_arr = explode(':', $expiration_date);
+                    ?>
                     <li class="lots__item lot">
 
                         <div class="lot__image">
-                            <img src="<?= htmlspecialchars($lot['img']) ?>"
+                            <img src="<?= htmlspecialchars($lot_img) ?>"
                                  width="350" height="260" alt="Сноуборд">
                         </div>
                         <div class="lot__info">
                             <span
-                                class="lot__category"><?= htmlspecialchars($lot['category']) ?></span>
+                                class="lot__category"><?= htmlspecialchars($lot_category) ?></span>
                             <h3 class="lot__title">
                                 <a class="text-link"
-                                   href="lot.php?id=<?= htmlspecialchars($lot['id']) ?>">
-                                    <?= htmlspecialchars($lot['name']) ?>
+                                   href="lot.php?id=<?= htmlspecialchars($lot_id) ?>">
+                                    <?= htmlspecialchars($lot_name) ?>
                                 </a>
                             </h3>
                             <div class="lot__state">
@@ -29,14 +42,13 @@
                                     <span
                                         class="lot__amount">Стартовая цена</span>
                                     <span
-                                        class="lot__cost"><?= htmlspecialchars(to_format_currency($lot['start_price'])) ?><b
+                                        class="lot__cost"><?= htmlspecialchars(to_format_currency($lot_start_price)) ?><b
                                             class="rub">р</b></span>
                                 </div>
                                 <div
-                                    class="lot__timer timer <?= $expiration_date[0]
-                                    === '00' ? 'timer—finishing' : '' ?>">
-                                    <?= $expiration_date[0].':'
-                                    .$expiration_date[1] ?>
+                                    class="lot__timer timer <?= $expiration_date_arr[0]
+                                    === '00' ? 'timer--finishing' : '' ?>">
+                                    <?= $expiration_date ?>
                                 </div>
                             </div>
                         </div>

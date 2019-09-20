@@ -8,8 +8,6 @@ if (is_user_authorization()) {
     exit;
 }
 
-$connect = connect_db(DB_CONFIG);
-
 $errors = [];
 $field_rules = [
     'email' => ['email'],

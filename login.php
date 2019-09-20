@@ -7,8 +7,6 @@ if (is_user_authorization()) {
     exit;
 }
 
-$connect = connect_db(DB_CONFIG);
-
 $errors = [];
 $field_rules = ['email' => null, 'password' => null];
 
@@ -16,6 +14,12 @@ if (!empty($_POST)) {
     foreach ($field_rules as $field_name => $rules) {
         if (empty(trim($_POST[$field_name]))) {
             $errors[$field_name] = 'Поле не заполнено';
+            continue;
+        } elseif ($field_name === 'email'
+            && !filter_var($_POST[$field_name],
+                FILTER_VALIDATE_EMAIL)
+        ) {
+            $errors[$field_name] = 'Не корректный E-mail';
             continue;
         }
     }

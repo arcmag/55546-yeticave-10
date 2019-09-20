@@ -2,16 +2,12 @@
 
 require_once 'init.php';
 
-$connect = connect_db(DB_CONFIG);
-
-if (is_user_authorization()) {
-    $user = get_user_data($connect, $_SESSION['user_id']);
-}
-
 $categories = get_categories($connect);
-$data_lot = get_lot_by_id($connect, $_GET['id']);
 
-if ($data_lot === -1) {
+$lot_id = !empty($_GET['id']) ? (int)$_GET['id'] : -1;
+$data_lot = get_lot_by_id($connect, $lot_id);
+
+if (empty($data_lot)) {
     http_response_code(404);
     $page_title = 'Ошибка 404: страница не найдена';
     $page_template = include_template('404.php');
@@ -19,7 +15,9 @@ if ($data_lot === -1) {
     $wagers = get_wagers_by_lot_id($connect, $data_lot['id']);
     $cost_error = null;
 
-    $min_cost = empty($wagers) ? $data_lot['start_price'] :
+    $min_cost = empty($wagers)
+        ? $data_lot['start_price']
+        :
         $wagers[0]['price'] + $data_lot['bid_step'];
 
     if (!empty($_POST)) {
@@ -37,11 +35,11 @@ if ($data_lot === -1) {
 
     $page_title = $data_lot['name'];
     $page_template = include_template('lot.php', [
-        'id' => $_GET['id'],
+        'id' => $lot_id,
         'lot' => $data_lot,
         'wagers' => $wagers,
         'cost_error' => $cost_error,
-        'min_cost' => $min_cost
+        'min_cost' => $min_cost,
     ]);
 }
 
@@ -49,5 +47,5 @@ print(include_template('layout.php', [
     'title' => $page_title,
     'categories' => $categories,
     'content' => $page_template,
-    'user' => $user
+    'user' => $user,
 ]));

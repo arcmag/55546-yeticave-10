@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($title) ?></title>
+    <title><?= isset($title) ? htmlspecialchars($title) : '' ?></title>
     <link href="../css/normalize.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <link href="../css/flatpickr.min.css" rel="stylesheet">
@@ -20,7 +20,8 @@
             <form class="main-header__search" method="get"
                   action="search.php" autocomplete="off">
                 <input type="search" name="search" placeholder="Поиск лота"
-                       value="<?= isset($search) ? $search : '' ?>">
+                       value="<?= isset($search) ? htmlspecialchars($search)
+                           : '' ?>">
                 <input class="main-header__search-btn" type="submit" name="find"
                        value="Найти">
             </form>
@@ -30,7 +31,8 @@
             <nav class="user-menu">
                 <?php if (is_user_authorization()): ?>
                     <div class="user-menu__logged">
-                        <p><?= htmlspecialchars($user['name']) ?></p>
+                        <p><?= isset($user['name'])
+                                ? htmlspecialchars($user['name']) : '' ?></p>
                         <a class="user-menu__bets" href="my-lots.php">Мои
                             ставки</a>
                         <a class="user-menu__logout" href="logout.php">Выход</a>
@@ -59,7 +61,12 @@
         <ul class="nav__list container">
             <?php foreach ($categories as $item): ?>
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?= htmlspecialchars($item['name']) ?></a>
+                    <a href="lots-by-category.php?category=<?= isset($item['id'])
+                        ?
+                        htmlspecialchars($item['id']) : '' ?>">
+                        <?= isset($item['name'])
+                            ? htmlspecialchars($item['name']) : '' ?>
+                    </a>
                 </li>
             <?php endforeach; ?>
         </ul>

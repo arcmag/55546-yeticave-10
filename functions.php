@@ -1,19 +1,6 @@
 <?php
 
 /**
- * Выводит на экран в удобном виде данные переданного ассоциативного массива
- *
- * @param array   $data      ассоциативный массив с данными
- * @param boolean $is_active флаг вывода
- */
-function debug($data, $is_active = true)
-{
-    if ($is_active) {
-        echo '<pre>'.print_r($data, true).'</pre>';
-    }
-}
-
-/**
  * Возвращает строку с ценой в отформатированном виде
  *
  * @param string $price строка с необработанной ценой
@@ -30,12 +17,22 @@ function to_format_currency($price)
  *
  * @param string $date строка с оставшимся до конца торгов временем ставки необработанно виде
  *
- * @return array строка с отформатированным временем
+ * @return string строка с отформатированным временем
  */
-function get_dt_range($date)
+function get_date_range($date)
 {
-    return explode(':',
-        date('H:i', strtotime($date) - time()));
+    $timestamp = strtotime($date) - time();
+
+    $min = (int)($timestamp / 60) % 60;
+    if ($min < 10) {
+        $min = "0".$min;
+    }
+    $hour = (int)($timestamp / (60 * 60));
+    if ($hour < 10) {
+        $hour = "0".$hour;
+    }
+
+    return $hour.":".$min;
 }
 
 /**
@@ -50,7 +47,7 @@ function connect_db($config)
     $connect = mysqli_connect($config['HOST'], $config['USER'],
         $config['PASSWORD'], $config['DB'])
     or die('Ошибка подключения '.mysqli_connect_error());
-    mysqli_set_charset($connect, 'utf-8');
+    mysqli_set_charset($connect, 'utf8');
 
     return $connect;
 }
@@ -107,7 +104,9 @@ function validate_field($value, $rules)
             $error = "Недопустимое число, минимальное значение {$config}";
         }
 
-        if ($rule === 'check_date' && strtotime($value) < $config) {
+        if ($rule === 'check_date'
+            && (date('d', time()) >= explode('-', $value)[2])
+        ) {
             $error
                 = "Дата окончания торгов должна быть как минимум +1 день от сегодняшней даты";
         }
@@ -299,9 +298,9 @@ function send_mail_for_winner($user_email, $user_name, $lot_id, $lot_name)
         ->setPassword(MAIL_WINNER_CONFIG['PASSWORD']);
 
     $message = (new Swift_Message('Ваша ставка победила'))
-    ->setTo([$user_email => $user_name])
-    ->setBody($msg_content, 'text/html')
-    ->setFrom([MAIL_WINNER_CONFIG['FROM'] => 'YetiCave']);
+        ->setTo([$user_email => $user_name])
+        ->setBody($msg_content, 'text/html')
+        ->setFrom([MAIL_WINNER_CONFIG['FROM'] => 'YetiCave']);
 
     (new Swift_Mailer($transport))->send($message);
 }
