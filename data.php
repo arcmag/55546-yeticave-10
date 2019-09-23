@@ -131,7 +131,7 @@ function get_wagers_by_lot_id($connect, $lot_id)
 function get_wagers_by_user_id($connect, $user_id)
 {
     $user_id = mysqli_real_escape_string($connect, $user_id);
-    $sql = "SELECT NOW() - w.date as `date`,
+    $sql = "SELECT w.date as `date`,
         w.price as `price`,
         l.id as lot_id ,
         l.img as `img`,
