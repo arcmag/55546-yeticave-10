@@ -4,7 +4,6 @@
     <div
         class="form__item <?= isset($errors['email']) ? 'form__item--invalid'
             : '' ?>">
-        <!-- form__item--invalid -->
         <label for="email">E-mail <sup>*</sup></label>
         <input id="email" type="text" name="email" placeholder="Введите e-mail"
                value="<?= getPostVal('email') ?>">

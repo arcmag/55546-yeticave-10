@@ -22,8 +22,7 @@
                 <input type="search" name="search" placeholder="Поиск лота"
                        value="<?= isset($search) ? htmlspecialchars($search)
                            : '' ?>">
-                <input class="main-header__search-btn" type="submit" name="find"
-                       value="Найти">
+                <input class="main-header__search-btn" type="submit">
             </form>
             <a class="main-header__add-lot button" href="add.php">Добавить
                 лот</a>

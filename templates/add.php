@@ -23,11 +23,13 @@
             <select id="category" name="category" required>
                 <option value="">Выберите категорию</option>
                 <?php foreach ($categories as $category): ?>
-                    <?php $id = isset($category['id']) ? $category['id']
+                    <?php $id = isset($category['id'])
+                        ? htmlspecialchars($category['id'])
                         : ''; ?>
                     <option <?= (getPostVal('category') === $id)
                         ? 'selected' : ''; ?> value="<?= $id; ?>">
-                        <?= isset($category['name']) ? $category['name']
+                        <?= isset($category['name'])
+                            ? htmlspecialchars($category['name'])
                             : ''; ?>
                     </option>
                 <?php endforeach; ?>

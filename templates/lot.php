@@ -1,5 +1,5 @@
 <section class="lot-item container">
-    <h2><?= isset($lot['name']) ? $lot['name'] : '' ?></h2>
+    <h2><?= isset($lot['name']) ? htmlspecialchars($lot['name']) : '' ?></h2>
     <div class="lot-item__content">
         <div class="lot-item__left">
             <div class="lot-item__image">
@@ -8,7 +8,8 @@
                      width="730" height="548" alt="Сноуборд">
             </div>
             <p class="lot-item__category">Категория:
-                <span><?= isset($lot['category']) ? $lot['category']
+                <span><?= isset($lot['category'])
+                        ? htmlspecialchars($lot['category'])
                         : '' ?></span></p>
             <p class="lot-item__description"><?= isset($lot['description']) ?
                     htmlspecialchars($lot['description']) : '' ?></p>
@@ -46,18 +47,20 @@
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
                             <span
-                                class="lot-item__cost"><?= to_format_currency(!empty($lot_max_wager)
-                                    ? $lot_max_wager
-                                    : $lot_start_price) ?></span>
+                                class="lot-item__cost"><?= htmlspecialchars(to_format_currency(
+                                    !empty($lot_max_wager)
+                                        ? $lot_max_wager
+                                        : $lot_start_price)) ?></span>
                         </div>
                         <div class="lot-item__min-cost">
                             Мин. ставка
-                            <span><?= to_format_currency($min_cost) ?> р</span>
+                            <span><?= htmlspecialchars(to_format_currency($min_cost)) ?> р</span>
                         </div>
                     </div>
                     <form class="lot-item__form <?= isset($cost_error)
                         ? 'lot-item__form--invalid' : '' ?>"
-                          action="lot.php?id=<?= $id ?>" method="post"
+                          action="lot.php?id=<?= htmlspecialchars($id) ?>"
+                          method="post"
                           autocomplete="off">
                         <p class="lot-item__form-item form__item form__item--invalid">
                             <label for="cost">Ваша ставка</label>
@@ -88,7 +91,7 @@
                         ?>
                         <tr class="history__item">
                             <td class="history__name"><?= htmlspecialchars($wager_author) ?></td>
-                            <td class="history__price"><?= to_format_currency($wager_price) ?>
+                            <td class="history__price"><?= htmlspecialchars(to_format_currency($wager_price)) ?>
                                 р
                             </td>
                             <td class="history__time"><?= $date.' в '

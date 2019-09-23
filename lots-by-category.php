@@ -6,7 +6,8 @@ $categories = get_categories($connect);
 $category_id = empty($_GET['category']) ? 1 : (int)$_GET['category'];
 $current_page = empty($_GET['page']) ? 1 : (int)$_GET['page'];
 $category_idx = array_search($category_id, array_column($categories, 'id'));
-$category_name = $categories[$category_idx]['name'];
+$category_name = isset($categories[$category_idx]['name'])
+    ? $categories[$category_idx]['name'] : '';
 
 $total = get_lot_by_category_result_count($connect, $category_id);
 $max_page_result = 9;

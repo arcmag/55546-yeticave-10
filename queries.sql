@@ -1,11 +1,11 @@
 /* Запрос на создание категорий */
-INSERT INTO `category` (`name`, `code`) VALUES
-    ('Доски и лыжи', 'boards'),
-    ('Крепления', 'attachment'),
-    ('Ботинки', 'boots'),
-    ('Одежда', 'clothing'),
-    ('Инструменты', 'tools'),
-    ('Разное', 'other');
+INSERT INTO `category` (`id`, `name`, `code`) VALUES
+    (1, 'Доски и лыжи', 'boards'),
+    (2, 'Крепления', 'attachment'),
+    (3, 'Ботинки', 'boots'),
+    (4, 'Одежда', 'clothing'),
+    (5, 'Инструменты', 'tools'),
+    (6, 'Разное', 'other');
 
 /* Запрос на создание лотов */
 INSERT INTO `lot` (`date_create`, `name`, `category_id`, `start_price`, `bid_step`, `img`, `date_end`, `author_id`) VALUES

@@ -5,10 +5,10 @@
     <ul class="promo__list">
         <?php foreach ($categories as $item): ?>
             <li class="promo__item promo__item--<?= isset($item['code'])
-                ? $item['code'] : '' ?>">
+                ? htmlspecialchars($item['code']) : '' ?>">
                 <a class="promo__link"
                    href="lots-by-category.php?category=<?= isset($item['id'])
-                       ? $item['id'] : '' ?>">
+                       ? htmlspecialchars($item['id']) : '' ?>">
                     <?= isset($item['name']) ? htmlspecialchars($item['name'])
                         : '' ?>
                 </a>

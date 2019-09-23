@@ -1,9 +1,10 @@
 <h1>Поздравляем с победой</h1>
-<p>Здравствуйте, <?= $user_name; ?></p>
+<p>Здравствуйте, <?= htmlspecialchars($user_name); ?></p>
 <p>Ваша ставка для лота
     <a href="<?= (isset(MAIL_WINNER_CONFIG["ADDRESS"]) ?
-        MAIL_WINNER_CONFIG["ADDRESS"] : '')."/lot.php?id=$lot_id"; ?>">
-        <?= $lot_name; ?>
+        MAIL_WINNER_CONFIG["ADDRESS"] : '')."/lot.php?id="
+    .(htmlspecialchars($lot_id)); ?>">
+        <?= htmlspecialchars($lot_name); ?>
     </a>
     победила.</p>
 <p>Перейдите по ссылке

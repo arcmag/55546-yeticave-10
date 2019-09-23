@@ -5,10 +5,10 @@
     <ul class="promo__list">
         <?php foreach ($categories as $item): ?>
             <li class="promo__item promo__item--<?= isset($item['code'])
-                ? $item['code'] : '' ?>">
+                ? htmlspecialchars($item['code']) : '' ?>">
                 <a class="promo__link"
                    href="lots-by-category.php?category=<?= isset($item['id'])
-                       ? $item['id'] : '' ?>">
+                       ? htmlspecialchars($item['id']) : '' ?>">
                     <?= isset($item['name']) ? htmlspecialchars($item['name'])
                         : '' ?>
                 </a>
@@ -18,7 +18,7 @@
 </section>
 <section class="lots">
     <div class="lots__header">
-        <h2>Все лоты в категории: <?= $category_name ?></h2>
+        <h2>Все лоты в категории: <?= htmlspecialchars($category_name) ?></h2>
     </div>
     <ul class="lots__list">
         <?php foreach ($announcement_list as $value): ?>
@@ -64,18 +64,19 @@
     <?php if ($count_pages > 1): ?>
         <ul class="pagination-list">
             <li class="pagination-item pagination-item-prev">
-                <a href="lots-by-category.php?category=<?= $category_id ?>&page=<?= $current_page
-                > 1 ? $current_page - 1 : 1 ?>">Назад</a>
+                <a href="lots-by-category.php?category=<?= htmlspecialchars($category_id) ?>&page=<?= $current_page
+                > 1 ? htmlspecialchars($current_page - 1) : 1 ?>">Назад</a>
             </li>
             <?php for ($i = 1; $i <= $count_pages; $i++): ?>
                 <li class="pagination-item <?= $i === $current_page
                     ? 'pagination-item-active' : '' ?>">
-                    <a href="lots-by-category.php?category=<?= $category_id ?>&page=<?= $i ?>"><?= $i ?></a>
+                    <a href="lots-by-category.php?category=<?= htmlspecialchars($category_id) ?>&page=<?= $i ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
             <li class="pagination-item pagination-item-next">
-                <a href="lots-by-category.php?category=<?= $category_id ?>&page=<?= $current_page
-                < $count_pages ? $current_page + 1 : $count_pages ?>">Вперед</a>
+                <a href="lots-by-category.php?category=<?= htmlspecialchars($category_id) ?>&page=<?= $current_page
+                < $count_pages ? htmlspecialchars($current_page + 1)
+                    : $count_pages ?>">Вперед</a>
             </li>
         </ul>
     <?php endif; ?>

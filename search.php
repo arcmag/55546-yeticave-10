@@ -7,7 +7,7 @@ $categories = get_categories($connect);
 $max_page_result = 9;
 $current_page = empty($_GET['page']) ? 1 : (int)$_GET['page'];
 
-$search = trim(htmlspecialchars(isset($_GET['search']) ? $_GET['search'] : ''));
+$search = trim(isset($_GET['search']) ? $_GET['search'] : '');
 $total = get_search_result_count($connect, $search);
 $result = get_search_result($connect, $search, $max_page_result, $current_page);
 

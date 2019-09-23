@@ -24,14 +24,15 @@ if (!empty($_POST)) {
         }
     }
 
-    if (empty($errors['password']) && empty($errors['email'])) {
-        $data_user = check_user_data($connect, $_POST['email']);
+    if (count($errors) === 0) {
+        $post_email = isset($_POST['email']) ? $_POST['email'] : '';
+        $post_password = isset($_POST['password']) ? $_POST['password'] : '';
+
+        $data_user = check_user_data($connect, $post_email);
 
         if (!$data_user) {
             $errors['email'] = 'Пользователя с таким e-mail не существует';
-        } elseif (!password_verify($_POST['password'],
-            $data_user['password'])
-        ) {
+        } elseif (!password_verify($post_password, $data_user['password'])) {
             $errors['password'] = 'Введён не верный пароль';
         } else {
             user_authorization($data_user['id']);

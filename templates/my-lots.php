@@ -60,7 +60,7 @@
                 <td class="rates__price"><?= htmlspecialchars($wager_price) ?>
                     р
                 </td>
-                <td class="rates__time"><?= format_date_personal_lot($wager_date); ?></td>
+                <td class="rates__time"><?= htmlspecialchars(format_date_personal_lot($wager_date)); ?></td>
             </tr>
         <?php endforeach; ?>
     </table>

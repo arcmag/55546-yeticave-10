@@ -89,7 +89,6 @@ function check_field_len($value, $min, $max)
 function validate_field($value, $rules)
 {
     $error = null;
-
     foreach ($rules as $rule => $config) {
         if ($rule === 'length'
             && !check_field_len(mb_strlen($value), $config['min'],
@@ -99,22 +98,23 @@ function validate_field($value, $rules)
                 = "Не корректная длинна строки, минимальная допустимая длина 
                     {$config['min']}, a максимальная {$config['max']}";
         }
-
         if ($rule === 'min' && $value < $config) {
             $error = "Недопустимое число, минимальное значение {$config}";
         }
-
-        if ($rule === 'check_date'
-            && (date('d', time()) >= explode('-', $value)[2])
-        ) {
-            $error
-                = "Дата окончания торгов должна быть как минимум +1 день от сегодняшней даты";
+        if ($rule === 'check_date') {
+            $current_date = explode('-', date('Y-m-d', time()));
+            $select_date = explode('-', $value);
+            if ($current_date[0] > $select_date[0]
+                || $current_date[1] > $select_date[1]
+                || $current_date[2] >= $select_date[2]
+            ) {
+                $error
+                    = "Дата окончания торгов должна быть как минимум +1 день от сегодняшней даты";
+            }
         }
-
         if ($rule === 'match' && !preg_match($config, $value)) {
             $error = "Не верный формат строки";
         }
-
         if ($config === 'email'
             && !filter_var($value, FILTER_VALIDATE_EMAIL)
         ) {

@@ -63,17 +63,18 @@
         <ul class="pagination-list">
             <li class="pagination-item pagination-item-prev">
                 <a href="search.php?search=<?= $search ?>&page=<?= $current_page
-                > 1 ? $current_page - 1 : 1 ?>">Назад</a>
+                > 1 ? htmlspecialchars($current_page - 1) : 1 ?>">Назад</a>
             </li>
             <?php for ($i = 1; $i <= $count_pages; $i++): ?>
                 <li class="pagination-item <?= $i === $current_page
                     ? 'pagination-item-active' : '' ?>">
-                    <a href="search.php?search=<?= $search ?>&page=<?= $i ?>"><?= $i ?></a>
+                    <a href="search.php?search=<?= htmlspecialchars($search) ?>&page=<?= $i ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
             <li class="pagination-item pagination-item-next">
-                <a href="search.php?search=<?= $search ?>&page=<?= $current_page
-                < $count_pages ? $current_page + 1 : $count_pages ?>">Вперед</a>
+                <a href="search.php?search=<?= htmlspecialchars($search) ?>&page=<?= $current_page
+                < $count_pages ? htmlspecialchars($current_page + 1)
+                    : $count_pages ?>">Вперед</a>
             </li>
         </ul>
     <?php endif; ?>
