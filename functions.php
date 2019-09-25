@@ -102,11 +102,8 @@ function validate_field($value, $rules)
             $error = "Недопустимое число, минимальное значение {$config}";
         }
         if ($rule === 'check_date') {
-            $current_date = explode('-', date('Y-m-d', time()));
-            $select_date = explode('-', $value);
-            if ($current_date[0] > $select_date[0]
-                || $current_date[1] > $select_date[1]
-                || $current_date[2] >= $select_date[2]
+            if (strtotime($value) <= time()
+                && date('d', time()) >= explode('-', $value)[2]
             ) {
                 $error
                     = "Дата окончания торгов должна быть как минимум +1 день от сегодняшней даты";

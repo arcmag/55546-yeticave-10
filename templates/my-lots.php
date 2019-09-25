@@ -30,7 +30,8 @@
             $wager_date_end = isset($wager['date_end']) ? $wager['date_end']
                 : '';
             $wager_price = isset($wager['price']) ? $wager['price'] : '';
-            $wager_date = isset($wager['date']) ? (time() - strtotime($wager['date'])) : '';
+            $wager_date = isset($wager['date']) ? (time()
+                - strtotime($wager['date'])) : '';
 
             ?>
             <tr class="rates__item <?= $wager_status ?>">
