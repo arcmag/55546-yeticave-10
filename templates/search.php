@@ -7,7 +7,7 @@
             <p>Ничего не найдено по вашему запросу</p>
         <?php else: ?>
             <ul class="lots__list">
-                <? foreach ($result as $lot): ?>
+                <?php foreach ($result as $lot): ?>
                     <?php
                     $lot_date_end = isset($lot['date_end']) ? $lot['date_end']
                         : '';
@@ -54,7 +54,7 @@
                         </div>
 
                     </li>
-                <? endforeach; ?>
+                <?php endforeach; ?>
             </ul>
         <?php endif; ?>
     </section>

@@ -138,10 +138,12 @@ function get_wagers_by_user_id($connect, $user_id)
         l.name as `name`,
         l.date_end,
         l.winner_id,
-        c.name as `cat_name`
+        c.name as `cat_name`,
+        u.contacts
         FROM `wager` `w`
         JOIN `lot` `l` ON l.id = w.lot_id
         JOIN `category` `c` ON c.id = l.category_id
+        JOIN `user` `u` ON u.id = l.author_id
         WHERE w.author_id = '$user_id'
         ORDER BY w.date DESC";
     $wagers = mysqli_fetch_all(mysqli_query($connect, $sql), MYSQLI_ASSOC);

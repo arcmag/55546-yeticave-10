@@ -23,6 +23,7 @@
             }
 
             $wager_img = isset($wager['img']) ? $wager['img'] : '';
+            $wager_contacts = isset($wager['contacts']) ? $wager['contacts'] : '';
             $wager_name = isset($wager['name']) ? $wager['name'] : '';
             $wager_lot_id = isset($wager['lot_id']) ? $wager['lot_id'] : '';
             $wager_cat_name = isset($wager['cat_name']) ? $wager['cat_name']
@@ -41,9 +42,14 @@
                              width="54" height="40"
                              alt="<?= htmlspecialchars($wager_name) ?>">
                     </div>
-                    <h3 class="rates__title"><a
-                            href="lot.php?id=<?= htmlspecialchars($wager_lot_id) ?>"><?= htmlspecialchars($wager_name) ?></a>
-                    </h3>
+                    <div>
+                        <h3 class="rates__title"><a
+                                href="lot.php?id=<?= htmlspecialchars($wager_lot_id) ?>"><?= htmlspecialchars($wager_name) ?></a>
+                        </h3>
+                        <?php if ($data_wager_time_is_win): ?>
+                            <p><?= htmlspecialchars($wager_contacts) ?></p>
+                        <?php endif; ?>
+                    </div>
                 </td>
                 <td class="rates__category"><?= htmlspecialchars($wager_cat_name) ?></td>
                 <td class="rates__timer">
